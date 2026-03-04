@@ -224,25 +224,81 @@ body {
 }
 
 .schema-list {
-  gap: 6px;
+  flex: 1;
+  min-height: 0;
+  gap: 0;
   overflow-y: auto;
   padding-right: 4px;
 }
 
-.schema-item {
-  border-radius: 12px;
-  padding: 6px 10px;
+.schema-item,
+.type-btn {
+  width: 100%;
+  text-align: left;
+  border-radius: 10px;
+  padding: 3px 8px;
   background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
   border: 1px solid rgba(31, 41, 55, 0.95);
   cursor: pointer;
   display: flex;
-  flex-direction: column;
-  gap: 3px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   transition:
     background 140ms ease,
     border-color 140ms ease,
     transform 120ms ease,
     box-shadow 120ms ease;
+}
+
+/* Sidebar action-button style (aligns with header buttons) */
+.panel-sidebar .type-btn {
+  border-radius: 999px;
+  height: 50px;
+  padding: 0 12px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(
+    135deg,
+    rgba(79, 70, 229, 0.14),
+    rgba(56, 189, 248, 0.08)
+  );
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  box-shadow: 0 10px 26px rgba(2, 6, 23, 0.55);
+}
+
+.panel-sidebar .type-btn:last-child {
+  margin-bottom: 0;
+}
+
+.panel-sidebar .schema-item-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.panel-sidebar .schema-pill {
+  font-size: 11px;
+  padding: 2px 8px;
+}
+
+/* Scale icons inside sidebar buttons (if present) */
+.panel-sidebar .type-btn svg,
+.panel-sidebar .type-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.panel-sidebar .type-btn:hover {
+  border-color: rgba(56, 189, 248, 0.65);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 14px 35px rgba(56, 189, 248, 0.12);
+  transform: translateY(-0.5px);
+}
+
+.panel-sidebar .type-btn.active {
+  border-color: rgba(56, 189, 248, 0.9);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6), 0 18px 50px rgba(56, 189, 248, 0.14);
 }
 
 .schema-item:hover {
@@ -257,12 +313,14 @@ body {
 }
 
 .schema-item-title {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  line-height: 1.15;
+  font-weight: 700;
   color: #e5e7eb;
 }
 
 .schema-item-subtitle {
+  display: none;
   font-size: 10px;
   color: var(--text-muted);
 }
@@ -271,15 +329,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 2px;
+  margin-top: 0;
+  flex: 0 0 auto;
 }
 
 .schema-pill {
-  font-size: 10px;
-  padding: 2px 6px;
+  font-size: 9px;
+  padding: 1px 6px;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.6);
   color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+/* If your sidebar items use <small> or <p>, hide them for compactness */
+.panel-sidebar .schema-item small,
+.panel-sidebar .schema-item p,
+.panel-sidebar .type-btn small,
+.panel-sidebar .type-btn p {
+  display: none;
 }
 
 .schema-meta {
@@ -609,5 +677,4 @@ body {
     min-height: 220px;
   }
 }
-
 

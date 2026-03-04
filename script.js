@@ -358,7 +358,8 @@ function renderSchemaList() {
   schemaDefinitions.forEach((schema) => {
     const item = document.createElement("button");
     item.type = "button";
-    item.className = "schema-item" + (schema.id === state.activeSchemaId ? " active" : "");
+    item.className =
+      "schema-item type-btn" + (schema.id === state.activeSchemaId ? " active" : "");
     item.dataset.schemaId = schema.id;
 
     item.innerHTML = `
