@@ -892,25 +892,75 @@ function bindCopy() {
 
   btn.addEventListener("click", async (e) => {
     e.preventDefault();
-    const codeContent = document.getElementById("schema-json-id");
-    if (!codeContent) return;
 
-    const textToCopy = codeContent.textContent || "";
+    const codeEl = document.getElementById("schema-json-id");
+    if (!codeEl) return;
+
+    const textToCopy = (codeEl.textContent || "").trim();
+    if (!textToCopy) return;
+
     const originalLabel = btn.textContent;
+    const originalBoxShadow = btn.style.boxShadow;
+    const originalBorderColor = btn.style.borderColor;
 
-    try {
-      await navigator.clipboard.writeText(textToCopy);
+    const setCopiedUi = () => {
       btn.textContent = "Copied!";
-      setTimeout(() => {
-        btn.textContent = originalLabel;
-      }, 2000);
-    } catch (err) {
+      btn.style.borderColor = "rgba(34, 197, 94, 0.9)";
+      btn.style.boxShadow = "0 0 0 1px rgba(34, 197, 94, 0.35), 0 14px 40px rgba(34, 197, 94, 0.18)";
+    };
+
+    const revertUi = () => {
+      btn.textContent = "Copy";
+      btn.style.boxShadow = originalBoxShadow;
+      btn.style.borderColor = originalBorderColor;
+    };
+
+    const ok = await copyTextRobust(textToCopy);
+
+    if (ok) {
+      setCopiedUi();
+      setTimeout(revertUi, 2000);
+    } else {
       btn.textContent = "Error";
       setTimeout(() => {
-        btn.textContent = originalLabel;
+        btn.textContent = originalLabel || "Copy";
       }, 2000);
     }
   });
+}
+
+async function copyTextRobust(text) {
+  // Attempt modern clipboard API first (may fail in some iframes / insecure contexts).
+  try {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Fall through to execCommand fallback.
+  }
+
+  // Fallback: document.execCommand('copy')
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.top = "-9999px";
+    textarea.style.left = "-9999px";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+
+    textarea.focus();
+    textarea.select();
+    textarea.setSelectionRange(0, textarea.value.length);
+
+    const successful = document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return Boolean(successful);
+  } catch {
+    return false;
+  }
 }
 
 function validateJson() {
