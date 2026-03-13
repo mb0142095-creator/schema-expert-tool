@@ -621,6 +621,12 @@ body {
   color: #bbf7d0;
 }
 
+.pill-error {
+  background: rgba(248, 113, 113, 0.18);
+  border-color: rgba(248, 113, 113, 0.9);
+  color: #fecaca;
+}
+
 .code-header-actions {
   display: flex;
   align-items: center;

@@ -883,25 +883,74 @@ function updateJsonPreview() {
   if (codeContent) {
     codeContent.innerHTML = highlighted;
   }
+  validateJson();
 }
 
 function bindCopy() {
   const btn = document.getElementById("copy-btn");
-  btn.addEventListener("click", (e) => {
+  if (!btn) return;
+
+  btn.addEventListener("click", async (e) => {
     e.preventDefault();
-    const json = buildJsonLd();
-    const asString = JSON.stringify(json, null, 2);
-    navigator.clipboard
-      .writeText(`<script type="application/ld+json">\n${asString}\n</script>`)
-      .then(() => {
-        btn.textContent = "Copied";
-        setTimeout(() => (btn.textContent = "Copy"), 1400);
-      })
-      .catch(() => {
-        btn.textContent = "Error";
-        setTimeout(() => (btn.textContent = "Copy"), 1400);
-      });
+    const codeContent = document.getElementById("schema-json-id");
+    if (!codeContent) return;
+
+    const textToCopy = codeContent.textContent || "";
+    const originalLabel = btn.textContent;
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      btn.textContent = "Copied!";
+      setTimeout(() => {
+        btn.textContent = originalLabel;
+      }, 2000);
+    } catch (err) {
+      btn.textContent = "Error";
+      setTimeout(() => {
+        btn.textContent = originalLabel;
+      }, 2000);
+    }
   });
+}
+
+function validateJson() {
+  const pill = document.querySelector(".panel-code .pill");
+  if (!pill) return;
+
+  let isValid = true;
+
+  try {
+    const jsonObj = buildJsonLd();
+    // Ensure JSON can be serialized and parsed without throwing
+    JSON.parse(JSON.stringify(jsonObj));
+  } catch {
+    isValid = false;
+  }
+
+  const schema = schemaDefinitions.find((s) => s.id === state.activeSchemaId);
+  const values = state.values[state.activeSchemaId] || {};
+
+  if (schema) {
+    for (const field of schema.fields) {
+      if (field.required) {
+        const value = values[field.id];
+        if (!isPresent(value)) {
+          isValid = false;
+          break;
+        }
+      }
+    }
+  }
+
+  if (isValid) {
+    pill.textContent = "Valid";
+    pill.classList.remove("pill-error");
+    pill.classList.add("pill-success");
+  } else {
+    pill.textContent = "Invalid";
+    pill.classList.remove("pill-success");
+    pill.classList.add("pill-error");
+  }
 }
 
 function bindDocs() {
