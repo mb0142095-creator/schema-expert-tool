@@ -348,6 +348,8 @@ function init() {
   renderSchemaList();
   switchSchema(state.activeSchemaId);
   bindCopy();
+  bindDocs();
+  bindExport();
   createGoogleTestButton();
 }
 
@@ -875,10 +877,12 @@ function syntaxHighlightJson(obj) {
 }
 
 function updateJsonPreview() {
-  const codeContent = document.getElementById("code-content");
+  const codeContent = document.getElementById("schema-json-id");
   const json = buildJsonLd();
   const highlighted = syntaxHighlightJson(json);
-  codeContent.innerHTML = highlighted;
+  if (codeContent) {
+    codeContent.innerHTML = highlighted;
+  }
 }
 
 function bindCopy() {
@@ -897,6 +901,45 @@ function bindCopy() {
         btn.textContent = "Error";
         setTimeout(() => (btn.textContent = "Copy"), 1400);
       });
+  });
+}
+
+function bindDocs() {
+  const btn = document.getElementById("docs-btn");
+  if (!btn) return;
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    try {
+      window.top.location.href =
+        "https://schemaexpertify.com/schemaexpertify-documentation/";
+    } catch {
+      window.location.href =
+        "https://schemaexpertify.com/schemaexpertify-documentation/";
+    }
+  });
+}
+
+function bindExport() {
+  const btn = document.getElementById("export-btn");
+  if (!btn) return;
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const json = buildJsonLd();
+    const asString = JSON.stringify(json, null, 2);
+
+    const blob = new Blob([asString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "schema-markup.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
   });
 }
 
